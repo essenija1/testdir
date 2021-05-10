@@ -1,0 +1,29 @@
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| example            |
+| foo                |
+| information_schema |
+| mydb               |
+| mysql              |
+| performance_schema |
+| sample             |
+| shop               |
+| sys                |
+| test34             |
+| vk                 |
+| world              |
++--------------------+
+12 rows in set (0.00 sec)
+
+mysql> describe sample.users;
++-------+-----------------+------+-----+---------+----------------+
+| Field | Type            | Null | Key | Default | Extra          |
++-------+-----------------+------+-----+---------+----------------+
+| id    | bigint unsigned | NO   | PRI | NULL    | auto_increment |
+| name  | varchar(255)    | YES  |     | NULL    |                |
++-------+-----------------+------+-----+---------+----------------+
+2 rows in set (0.00 sec)
+
+mysql>
