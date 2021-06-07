@@ -1,0 +1,151 @@
+DROP DATABASE IF EXISTS gosuslugi;
+CREATE DATABASE gosuslugi;
+USE gosuslugi;
+
+DROP TABLE IF exists users;
+CREATE TABLE users (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+profile_id int unsigned NOT NULL,
+first_name varchar(100) NOT NULL,
+last_name varchar(100) NOT NULL,
+email varchar(100) NOT NULL,
+phone varchar(100) NOT NULL,
+created_at datetime DEFAULT CURRENT_TIMESTAMP,
+updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+UNIQUE KEY email (email),
+UNIQUE KEY phone (phone)
+);
+
+DROP TABLE IF exists profiles;
+CREATE TABLE profiles (
+user_id int unsigned NOT NULL PRIMARY KEY,
+gender char(1) NOT NULL,
+country_id varchar(200) DEFAULT NULL,
+nationality_id varchar(200) DEFAULT NULL,
+education_id varchar(130) DEFAULT NULL,
+medinsurans_id varchar(130) DEFAULT NULL,
+zagranpasport_id varchar(100) DEFAULT NULL,
+birthday date NOT NULL,
+image_id int unsigned DEFAULT NULL,
+user_status_id int unsigned DEFAULT NULL,
+adress_id varchar(130) DEFAULT NULL,
+created_at datetime DEFAULT CURRENT_TIMESTAMP,
+updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+FOREIGN KEY (user_id) REFERENCES users (id)
+ON DELETE RESTRICT
+ON UPDATE cascade
+);
+
+
+DROP TABLE IF EXISTS countries;
+CREATE TABLE countries (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+country VARCHAR(200) UNIQUE NOT null,
+metadata json DEFAULT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id),
+CONSTRAINT country_chk_1 CHECK (json_valid(metadata))
+);
+
+
+DROP TABLE IF EXISTS nationalities;
+CREATE TABLE nationalities (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+nationality VARCHAR(200) UNIQUE NOT null,
+metadata json DEFAULT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id),
+CONSTRAINT nationality_chk_1 CHECK (json_valid(metadata))
+);
+
+DROP TABLE IF EXISTS cities;
+CREATE TABLE cities (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+city VARCHAR(200) UNIQUE NOT null,
+metadata json DEFAULT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id),
+CONSTRAINT city_chk_1 CHECK (json_valid(metadata))
+);
+
+CREATE TABLE images (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+filename varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+size int NOT NULL,
+metadata json DEFAULT NULL,
+created_at datetime DEFAULT CURRENT_TIMESTAMP,
+updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+FOREIGN KEY (user_id) REFERENCES users(id),
+CONSTRAINT image_chk_1 CHECK (json_valid(metadata))
+);
+
+
+DROP TABLE IF EXISTS educationses;
+CREATE TABLE educationses (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+education VARCHAR(200) UNIQUE NOT null,
+metadata json DEFAULT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id),
+CONSTRAINT education_chk_1 CHECK (json_valid(metadata))
+);
+
+DROP TABLE IF EXISTS medinsuranses;
+CREATE TABLE medinsuranses (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+medinsurans VARCHAR(200) UNIQUE NOT null,
+metadata json DEFAULT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id),
+CONSTRAINT medinsurans_chk_1 CHECK (json_valid(metadata))
+);
+
+DROP TABLE IF EXISTS zagranpasports;
+CREATE TABLE zagranpasports (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+zagranpasport VARCHAR(200) UNIQUE NOT null,
+metadata json DEFAULT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id),
+CONSTRAINT zagranpasport_chk_1 CHECK (json_valid(metadata))
+);
+
+
+DROP TABLE IF EXISTS adresses;
+CREATE TABLE zagranpasports (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+adress VARCHAR(200) UNIQUE NOT null,
+metadata json DEFAULT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id),
+CONSTRAINT adress_chk_1 CHECK (json_valid(metadata))
+);
+
+
+DROP FUNCTION IF EXISTS is_user_by_id_exists;
+DELIMITER //
+CREATE FUNCTION is_user_by_id_exists (user_id INT)
+RETURNS BOOLEAN READS SQL DATA
+BEGIN
+RETURN EXISTS(SELECT 1 FROM users WHERE id = user_id);
+END//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER validate_user_first_name_last_name_insert BEFORE INSERT ON users
+FOR EACH ROW BEGIN
+IF NEW.first_name IS NULL AND NEW.last_name IS NULL THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Both first name and last name are NULL';
+END IF;
+END//
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS get_user_profile_by_user_id;
+DELIMITER //
+CREATE PROCEDURE get_user_info_by_id(id INT)
+BEGIN
+SELECT * FROM profiles AS p WHERE p.user_id = id;
+END //
+DELIMITER ;
