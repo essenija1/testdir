@@ -2,81 +2,65 @@ DROP DATABASE IF EXISTS gosuslugi;
 CREATE DATABASE gosuslugi;
 USE gosuslugi;
 
-DROP TABLE IF exists users;
-CREATE TABLE users (
-id int unsigned NOT NULL auto_increment PRIMARY KEY,
-profile_id int unsigned NOT NULL,
-first_name varchar(100) NOT NULL,
-last_name varchar(100) NOT NULL,
-email varchar(100) NOT NULL,
-phone varchar(100) NOT NULL,
-created_at datetime DEFAULT CURRENT_TIMESTAMP,
-updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-UNIQUE KEY email (email),
-UNIQUE KEY phone (phone)
-);
-
-DROP TABLE IF exists profiles;
-CREATE TABLE profiles (
-user_id int unsigned NOT NULL PRIMARY KEY,
-gender char(1) NOT NULL,
-country_id varchar(200) DEFAULT NULL,
-nationality_id varchar(200) DEFAULT NULL,
-education_id varchar(130) DEFAULT NULL,
-medinsurans_id varchar(130) DEFAULT NULL,
-zagranpasport_id varchar(100) DEFAULT NULL,
-birthday date NOT NULL,
-image_id int unsigned DEFAULT NULL,
-user_status_id int unsigned DEFAULT NULL,
-adress_id varchar(130) DEFAULT NULL,
-created_at datetime DEFAULT CURRENT_TIMESTAMP,
-updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-FOREIGN KEY (user_id) REFERENCES users (id)
-ON DELETE RESTRICT
-ON UPDATE cascade
-);
 
 
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
-user_id int unsigned NOT NULL,
-country VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
-FOREIGN KEY (user_id) REFERENCES users(id),
 CONSTRAINT country_chk_1 CHECK (json_valid(metadata))
 );
 
-
+     
 DROP TABLE IF EXISTS nationalities;
 CREATE TABLE nationalities (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
-user_id int unsigned NOT NULL,
-nationality VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
-FOREIGN KEY (user_id) REFERENCES users(id),
 CONSTRAINT nationality_chk_1 CHECK (json_valid(metadata))
 );
 
 DROP TABLE IF EXISTS cities;
 CREATE TABLE cities (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
-user_id int unsigned NOT NULL,
-city VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
-FOREIGN KEY (user_id) REFERENCES users(id),
 CONSTRAINT city_chk_1 CHECK (json_valid(metadata))
 );
 
-CREATE TABLE images (
+
+DROP TABLE IF exists users;
+CREATE TABLE users (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+first_name varchar(100) NOT NULL,
+last_name varchar(100) NOT NULL,
+email varchar(100) NOT null unique,
+phone varchar(100) NOT null unique,
+gender char(1) NOT NULL,
+country_id int unsigned NOT NULL,
+nationality_id int unsigned NOT NULL,
+city_id int unsigned NOT NULL,
+birthday date NOT NULL,
+image_id int unsigned NOT NULL,
+user_status_id int unsigned NOT NULL,
+created_at datetime DEFAULT CURRENT_TIMESTAMP,
+updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+FOREIGN KEY (country_id) REFERENCES countries(id) ON DELETE restrict ON UPDATE cascade,
+FOREIGN KEY (city_id) REFERENCES cities(id) ON DELETE restrict ON UPDATE cascade,
+FOREIGN KEY (nationality_id) REFERENCES nationalities(id) ON DELETE restrict ON UPDATE cascade
+);
+
+
+
+
+DROP TABLE IF exists image;
+CREATE TABLE image (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
 user_id int unsigned NOT NULL,
-filename varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+filename varchar(255) NOT NULL,
 size int NOT NULL,
 metadata json DEFAULT NULL,
 created_at datetime DEFAULT CURRENT_TIMESTAMP,
 updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-FOREIGN KEY (user_id) REFERENCES users(id),
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
 CONSTRAINT image_chk_1 CHECK (json_valid(metadata))
 );
 
@@ -87,7 +71,7 @@ id int unsigned NOT NULL auto_increment PRIMARY KEY,
 user_id int unsigned NOT NULL,
 education VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
-FOREIGN KEY (user_id) REFERENCES users(id),
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
 CONSTRAINT education_chk_1 CHECK (json_valid(metadata))
 );
 
@@ -97,7 +81,7 @@ id int unsigned NOT NULL auto_increment PRIMARY KEY,
 user_id int unsigned NOT NULL,
 medinsurans VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
-FOREIGN KEY (user_id) REFERENCES users(id),
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
 CONSTRAINT medinsurans_chk_1 CHECK (json_valid(metadata))
 );
 
@@ -107,19 +91,28 @@ id int unsigned NOT NULL auto_increment PRIMARY KEY,
 user_id int unsigned NOT NULL,
 zagranpasport VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
-FOREIGN KEY (user_id) REFERENCES users(id),
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
 CONSTRAINT zagranpasport_chk_1 CHECK (json_valid(metadata))
 );
 
-
-DROP TABLE IF EXISTS adresses;
-CREATE TABLE zagranpasports (
+DROP TABLE IF EXISTS liveadresses;
+CREATE TABLE liveadresses (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
 user_id int unsigned NOT NULL,
-adress VARCHAR(200) UNIQUE NOT null,
+liveadress VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
-FOREIGN KEY (user_id) REFERENCES users(id),
-CONSTRAINT adress_chk_1 CHECK (json_valid(metadata))
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
+CONSTRAINT liveadress_chk_1 CHECK (json_valid(metadata))
+);
+
+DROP TABLE IF EXISTS factadresses;
+CREATE TABLE factadresses (
+id int unsigned NOT NULL auto_increment PRIMARY KEY,
+user_id int unsigned NOT NULL,
+factadress VARCHAR(200) UNIQUE NOT null,
+metadata json DEFAULT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
+CONSTRAINT factadress_chk_1 CHECK (json_valid(metadata))
 );
 
 
