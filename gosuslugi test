@@ -95,24 +95,48 @@ FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
 CONSTRAINT zagranpasport_chk_1 CHECK (json_valid(metadata))
 );
 
-DROP TABLE IF EXISTS liveadresses;
-CREATE TABLE liveadresses (
+DROP TABLE IF EXISTS adresses;
+CREATE TABLE adresses (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
 user_id int unsigned NOT NULL,
-liveadress VARCHAR(200) UNIQUE NOT null,
+adress VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
-CONSTRAINT liveadress_chk_1 CHECK (json_valid(metadata))
+CONSTRAINT adress_chk_1 CHECK (json_valid(metadata))
 );
 
-DROP TABLE IF EXISTS factadresses;
-CREATE TABLE factadresses (
+DROP TABLE IF EXISTS companies;
+CREATE TABLE companies (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
 user_id int unsigned NOT NULL,
-factadress VARCHAR(200) UNIQUE NOT null,
+company VARCHAR(200) UNIQUE NOT null,
 metadata json DEFAULT NULL,
 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE restrict ON UPDATE cascade,
-CONSTRAINT factadress_chk_1 CHECK (json_valid(metadata))
+CONSTRAINT dress_chk_1 CHECK (json_valid(metadata))
+);
+
+
+drop table if exists likes;
+create table likes(
+like_id int unsigned not null auto_increment primary key,
+user_id int unsigned not null, 
+company_id int unsigned not null,
+foreign key (company_id) references users(id),
+foreign key (user_id) references companies(id)
+);
+
+DROP TABLE IF EXISTS messages;
+CREATE TABLE messages (
+id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+user_id int unsigned not null,
+from_company_id INT UNSIGNED NOT NULL,
+to_user_id INT UNSIGNED NOT NULL,
+body TEXT NOT NULL,
+is_delivered BOOLEAN,
+created_at DATETIME DEFAULT NOW(),
+company_id int unsigned not null,
+foreign key (company_id) references users(id),
+foreign key (user_id) references companies(id)
 );
 
 
