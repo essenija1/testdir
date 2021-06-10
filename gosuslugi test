@@ -7,14 +7,17 @@ USE gosuslugi;
 DROP TABLE IF EXISTS countries;
 CREATE TABLE countries (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
+name varchar(100) NOT NULL,
 metadata json DEFAULT NULL,
 CONSTRAINT country_chk_1 CHECK (json_valid(metadata))
 );
+
 
      
 DROP TABLE IF EXISTS nationalities;
 CREATE TABLE nationalities (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
+name varchar(100) NOT NULL,
 metadata json DEFAULT NULL,
 CONSTRAINT nationality_chk_1 CHECK (json_valid(metadata))
 );
@@ -22,6 +25,7 @@ CONSTRAINT nationality_chk_1 CHECK (json_valid(metadata))
 DROP TABLE IF EXISTS cities;
 CREATE TABLE cities (
 id int unsigned NOT NULL auto_increment PRIMARY KEY,
+name varchar(100) NOT NULL,
 metadata json DEFAULT NULL,
 CONSTRAINT city_chk_1 CHECK (json_valid(metadata))
 );
@@ -138,6 +142,9 @@ company_id int unsigned not null,
 foreign key (company_id) references users(id),
 foreign key (user_id) references companies(id)
 );
+
+
+
 
 
 DROP FUNCTION IF EXISTS is_user_by_id_exists;
