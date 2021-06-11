@@ -144,9 +144,6 @@ foreign key (user_id) references companies(id)
 );
 
 
-
-
-
 DROP FUNCTION IF EXISTS is_user_by_id_exists;
 DELIMITER //
 CREATE FUNCTION is_user_by_id_exists (user_id INT)
@@ -173,3 +170,13 @@ BEGIN
 SELECT * FROM profiles AS p WHERE p.user_id = id;
 END //
 DELIMITER ;
+
+
+
+select * 
+from cities
+order by id desc 
+limit 4;
+
+
+CREATE INDEX users_first_name_last_name_idx ON users(first_name, last_name);
